@@ -10,7 +10,12 @@
 
     <name>maven-gadgets-parent</name>
     <description>A simple maven-gadgets-parent.</description>
-    <url>http://www.example.com</url>
+    <url>https://github.com/wilx/maven-gadgets</url>
+    <scm>
+        <url>https://github.com/wilx/maven-gadgets</url>
+        <connection>scm:git:https://github.com/wilx/maven-gadgets.git</connection>
+        <developerConnection>scm:git:git@github.com:wilx/maven-gadgets.git</developerConnection>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
