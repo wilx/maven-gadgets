@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.text.ChoiceFormat;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -53,13 +54,22 @@ public class LifecycleListener extends AbstractEventSpy {
                     msg = MessageFormat.format("Maven build of project <b>{0}</b> has finished",
                             topLevelProject.getName());
                 } else {
-                    msg = MessageFormat.format("Maven build of project <b>{0}</b> has finished."
-                                    + "\nThere were {1} exceptions.",
-                            topLevelProject.getName(), sessionResult.getExceptions().size());
+                    msg = formatFailureMessage(topLevelProject, sessionResult);
                 }
                 notifyMessage(success ? "Success" : "Failure", msg);
             }
         }
+    }
+
+    @org.jetbrains.annotations.NotNull
+    private String formatFailureMessage(MavenProject topLevelProject, MavenExecutionResult sessionResult) {
+        double[] exceptionsLimits = {0, 1, 2};
+        String[] exceptionsPart = {"were no exceptions", "was one exception", "were {1,number} exceptions"};
+        ChoiceFormat exceptionsForm = new ChoiceFormat(exceptionsLimits, exceptionsPart);
+        MessageFormat form = new MessageFormat("Maven build of project <b>{0}</b> has finished."
+                + "\nThere {1}.");
+        form.setFormatByArgumentIndex(1, exceptionsForm);
+        return form.format(new Object[]{topLevelProject.getName(), sessionResult.getExceptions().size()});
     }
 
     private void notifyMessage(String title, String msg) throws DBusException, IOException {
