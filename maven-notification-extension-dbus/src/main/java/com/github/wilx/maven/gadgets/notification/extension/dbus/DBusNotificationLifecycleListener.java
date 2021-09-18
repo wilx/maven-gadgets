@@ -27,20 +27,24 @@ import java.util.TreeSet;
 
 @Named
 @Singleton
-public class LifecycleListener extends AbstractEventSpy {
-    private final Logger logger = LoggerFactory.getLogger(LifecycleListener.class);
+public class DBusNotificationLifecycleListener extends AbstractEventSpy {
+    private final Logger logger = LoggerFactory.getLogger(DBusNotificationLifecycleListener.class);
 
     private final String dbusAddress;
 
-    public LifecycleListener() {
+    public DBusNotificationLifecycleListener() {
         final Map<String, String> env = System.getenv();
         this.dbusAddress = env.getOrDefault("DBUS_SESSION_BUS_ADDRESS", DBusConnection.DEFAULT_SYSTEM_BUS_ADDRESS);
-        logger.debug("Using D-Bus address {}", this.dbusAddress);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Using D-Bus address {}", this.dbusAddress);
+        }
     }
 
     @Override
     public void onEvent(Object event) throws Exception {
-        logger.trace("Got event of type: {}", event.getClass().getName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Got event of type: {}", event.getClass().getName());
+        }
         if (event instanceof ExecutionEvent) {
             ExecutionEvent ee = (ExecutionEvent) event;
             ExecutionEvent.Type eeType = ee.getType();
@@ -77,13 +81,17 @@ public class LifecycleListener extends AbstractEventSpy {
             Notifications notifications = dbConn.getRemoteObject("org.freedesktop.Notifications",
                     "/org/freedesktop/Notifications", Notifications.class);
             Set<String> caps = new TreeSet<>(notifications.GetCapabilities());
-            logger.debug("org.freedesktop.Notifications.GetCapabilities(): {}", caps);
+            if (logger.isDebugEnabled()) {
+                logger.debug("org.freedesktop.Notifications.GetCapabilities(): {}", caps);
+            }
             final boolean bodyMarkupSupport = caps.contains("body-markup");
             final boolean soundSupport = caps.contains("sound");
 
             if (!bodyMarkupSupport) {
                 // Strip the markup.
-                logger.debug("Stripping body markup");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Stripping body markup");
+                }
                 msg = Jsoup.parse(msg).text();
             }
 
@@ -95,7 +103,9 @@ public class LifecycleListener extends AbstractEventSpy {
 
             UInt32 id = notifications.Notify("Apache Maven", new UInt32(0), "", title, msg,
                     Collections.emptyList(), hints, 10000);
-            logger.debug("Notify() returned {}", id);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Notify() returned {}", id);
+            }
         }
     }
 }

@@ -10,8 +10,8 @@ import java.text.ChoiceFormat;
 import java.text.MessageFormat;
 
 
-class LifecycleListenerTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LifecycleListenerTest.class);
+class DBusNotificationLifecycleListenerTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBusNotificationLifecycleListenerTest.class);
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 10})
