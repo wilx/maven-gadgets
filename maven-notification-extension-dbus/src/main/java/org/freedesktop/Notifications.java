@@ -23,7 +23,7 @@ public interface Notifications extends DBusInterface {
         private T3 v3;
         private T4 v4;
 
-        public Tuple4(T1 v1, T2 v2, T3 v3, T4 v4) {
+        public Tuple4(final T1 v1, final T2 v2, final T3 v3, final T4 v4) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;

@@ -15,14 +15,14 @@ class DBusNotificationLifecycleListenerTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 10})
-    void test(int exceptionsCount) {
-        double[] exceptionsLimits = {0, 1, 2};
-        String[] exceptionsPart = {"were no exceptions", "was one exception", "were {1,number} exceptions"};
-        ChoiceFormat exceptionsForm = new ChoiceFormat(exceptionsLimits, exceptionsPart);
-        MessageFormat form = new MessageFormat("Maven build of project <b>{0}</b> has finished."
+    void test(final int exceptionsCount) {
+        final double[] exceptionsLimits = {0, 1, 2};
+        final String[] exceptionsPart = {"were no exceptions", "was one exception", "were {1,number} exceptions"};
+        final ChoiceFormat exceptionsForm = new ChoiceFormat(exceptionsLimits, exceptionsPart);
+        final MessageFormat form = new MessageFormat("Maven build of project <b>{0}</b> has finished."
                 + "\nThere {1}.");
         form.setFormatByArgumentIndex(1, exceptionsForm);
-        String msg = form.format(new Object[]{"testProject", exceptionsCount});
+        final String msg = form.format(new Object[]{"testProject", exceptionsCount});
         Assertions.assertNotNull(msg);
         LOGGER.info("message: {}", msg);
     }

@@ -41,19 +41,19 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
     }
 
     @Override
-    public void onEvent(Object event) throws Exception {
+    public void onEvent(final Object event) throws Exception {
         if (logger.isTraceEnabled()) {
             logger.trace("Got event of type: {}", event.getClass().getName());
         }
         if (event instanceof ExecutionEvent) {
-            ExecutionEvent ee = (ExecutionEvent) event;
-            ExecutionEvent.Type eeType = ee.getType();
-            MavenSession mavenSession = ee.getSession();
+            final ExecutionEvent ee = (ExecutionEvent) event;
+            final ExecutionEvent.Type eeType = ee.getType();
+            final MavenSession mavenSession = ee.getSession();
             if (eeType.equals(ExecutionEvent.Type.SessionEnded)) {
-                MavenProject topLevelProject = mavenSession.getTopLevelProject();
-                MavenExecutionResult sessionResult = mavenSession.getResult();
-                boolean success = !sessionResult.hasExceptions();
-                String msg;
+                final MavenProject topLevelProject = mavenSession.getTopLevelProject();
+                final MavenExecutionResult sessionResult = mavenSession.getResult();
+                final boolean success = !sessionResult.hasExceptions();
+                final String msg;
                 if (success) {
                     msg = MessageFormat.format("Maven build of project <b>{0}</b> has finished",
                             topLevelProject.getName());
@@ -66,21 +66,21 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
     }
 
     @org.jetbrains.annotations.NotNull
-    private String formatFailureMessage(MavenProject topLevelProject, MavenExecutionResult sessionResult) {
-        double[] exceptionsLimits = {0, 1, 2};
-        String[] exceptionsPart = {"were no exceptions", "was one exception", "were {1,number} exceptions"};
-        ChoiceFormat exceptionsForm = new ChoiceFormat(exceptionsLimits, exceptionsPart);
-        MessageFormat form = new MessageFormat("Maven build of project <b>{0}</b> has finished."
+    private String formatFailureMessage(final MavenProject topLevelProject, final MavenExecutionResult sessionResult) {
+        final double[] exceptionsLimits = {0, 1, 2};
+        final String[] exceptionsPart = {"were no exceptions", "was one exception", "were {1,number} exceptions"};
+        final ChoiceFormat exceptionsForm = new ChoiceFormat(exceptionsLimits, exceptionsPart);
+        final MessageFormat form = new MessageFormat("Maven build of project <b>{0}</b> has finished."
                 + "\nThere {1}.");
         form.setFormatByArgumentIndex(1, exceptionsForm);
         return form.format(new Object[]{topLevelProject.getName(), sessionResult.getExceptions().size()});
     }
 
-    private void notifyMessage(String title, String msg) throws DBusException, IOException {
-        try (DBusConnection dbConn = DBusConnection.getConnection(this.dbusAddress)) {
-            Notifications notifications = dbConn.getRemoteObject("org.freedesktop.Notifications",
+    private void notifyMessage(final String title, String msg) throws DBusException, IOException {
+        try (final DBusConnection dbConn = DBusConnection.getConnection(this.dbusAddress)) {
+            final Notifications notifications = dbConn.getRemoteObject("org.freedesktop.Notifications",
                     "/org/freedesktop/Notifications", Notifications.class);
-            Set<String> caps = new TreeSet<>(notifications.GetCapabilities());
+            final Set<String> caps = new TreeSet<>(notifications.GetCapabilities());
             final boolean debugEnabled = logger.isDebugEnabled();
             if (debugEnabled) {
                 logger.debug("org.freedesktop.Notifications.GetCapabilities(): {}", caps);
@@ -96,13 +96,13 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
                 msg = Jsoup.parse(msg).text();
             }
 
-            Map<String, Variant<?>> hints = new LinkedHashMap<>(1);
+            final Map<String, Variant<?>> hints = new LinkedHashMap<>(1);
             hints.put("urgency", new Variant<>((byte)1));
             if (soundSupport) {
                 hints.put("sound-name", new Variant<>("dialog-information"));
             }
 
-            UInt32 id = notifications.Notify("Apache Maven", new UInt32(0), "", title, msg,
+            final UInt32 id = notifications.Notify("Apache Maven", new UInt32(0), "", title, msg,
                     Collections.emptyList(), hints, 10000);
             if (debugEnabled) {
                 logger.debug("Notify() returned {}", id);
