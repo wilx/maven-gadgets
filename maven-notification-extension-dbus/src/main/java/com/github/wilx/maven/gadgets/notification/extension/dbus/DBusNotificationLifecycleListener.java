@@ -81,7 +81,8 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
             Notifications notifications = dbConn.getRemoteObject("org.freedesktop.Notifications",
                     "/org/freedesktop/Notifications", Notifications.class);
             Set<String> caps = new TreeSet<>(notifications.GetCapabilities());
-            if (logger.isDebugEnabled()) {
+            final boolean debugEnabled = logger.isDebugEnabled();
+            if (debugEnabled) {
                 logger.debug("org.freedesktop.Notifications.GetCapabilities(): {}", caps);
             }
             final boolean bodyMarkupSupport = caps.contains("body-markup");
@@ -89,7 +90,7 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
 
             if (!bodyMarkupSupport) {
                 // Strip the markup.
-                if (logger.isDebugEnabled()) {
+                if (debugEnabled) {
                     logger.debug("Stripping body markup");
                 }
                 msg = Jsoup.parse(msg).text();
@@ -103,7 +104,7 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
 
             UInt32 id = notifications.Notify("Apache Maven", new UInt32(0), "", title, msg,
                     Collections.emptyList(), hints, 10000);
-            if (logger.isDebugEnabled()) {
+            if (debugEnabled) {
                 logger.debug("Notify() returned {}", id);
             }
         }
