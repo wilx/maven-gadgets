@@ -47,9 +47,8 @@ public class DBusNotificationLifecycleListener extends AbstractEventSpy {
         }
         if (event instanceof ExecutionEvent) {
             final ExecutionEvent ee = (ExecutionEvent) event;
-            final ExecutionEvent.Type eeType = ee.getType();
-            final MavenSession mavenSession = ee.getSession();
-            if (eeType.equals(ExecutionEvent.Type.SessionEnded)) {
+            if (ee.getType().equals(ExecutionEvent.Type.SessionEnded)) {
+                final MavenSession mavenSession = ee.getSession();
                 final MavenProject topLevelProject = mavenSession.getTopLevelProject();
                 final MavenExecutionResult sessionResult = mavenSession.getResult();
                 final boolean success = !sessionResult.hasExceptions();
